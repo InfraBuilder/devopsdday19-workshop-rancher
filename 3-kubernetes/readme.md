@@ -6,7 +6,9 @@ Objectif : Déployer un cluster Kubernetes géré par Rancher 2
 
 * Sur l'interface de Rancher (https://rancher.dday.ibd.sh), sur la vue globale cliquez sur `Add cluster`
 * Séléctionnez `From existing nodes (Custom)`
-* Renseignez le nom du cluster : "**userX**"  (**NB :** Pensez à remplacer **userX**), puis cliquez sur `next`en bas de la page
+* Renseignez le nom du cluster : "**userX**"  (**NB :** Pensez à remplacer **userX**), 
+* Sélectionnez la version **v1.16.10-rancher2-1** de Kubernetes
+* Cliquez sur `next`en bas de la page
 
 Vous êtes à présent sur la page `Add Cluster - Custom`, cette page est un générateur de commande docker, qui va nous permettre d'ajouter les noeuds au cluster
 

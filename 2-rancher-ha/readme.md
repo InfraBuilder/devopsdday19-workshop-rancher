@@ -56,21 +56,12 @@ Vous devriez obtenir un résultat similaire à ce qui suit :
 
 ```
 NAME                          STATUS   ROLES                      AGE   VERSION
-rancher01.userX.dday.ibd.sh   Ready    controlplane,etcd,worker   65s   v1.15.5
-rancher02.userX.dday.ibd.sh   Ready    controlplane,etcd,worker   65s   v1.15.5
-rancher03.userX.dday.ibd.sh   Ready    controlplane,etcd,worker   65s   v1.15.5
+rancher01.userX.dday.ibd.sh   Ready    controlplane,etcd,worker   65s   v1.17.6
+rancher02.userX.dday.ibd.sh   Ready    controlplane,etcd,worker   65s   v1.17.6
+rancher03.userX.dday.ibd.sh   Ready    controlplane,etcd,worker   65s   v1.17.6
 ```
 
-## 3: Installation de Helm
-
-```bash
-kubectl -n kube-system create sa tiller
-kubectl create clusterrolebinding tiller \
-    --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-helm init --service-account tiller
-```
-
-## 4 : Installation de cert-manager
+## 3 : Installation de cert-manager
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
@@ -79,24 +70,21 @@ kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
-helm install \
-  --name cert-manager \
-  --namespace cert-manager \
-  --version v0.9.1 \
-  jetstack/cert-manager
+helm install cert-manager --namespace cert-manager \
+   jetstack/cert-manager --set installCRDs=true 
 ```
 
 A ce stade vous devriez pouvoir lister les release Helm :
 
 ```bash
-helm list
+helm list -n cert-manager
 ```
 
 Vous devriez avoir le résultat suivant :
 
 ```
-NAME        	REVISION	UPDATED                 	STATUS  	CHART              	APP VERSION	NAMESPACE
-cert-manager	1       	Mon Nov XX 19:07:44 2019	DEPLOYED	cert-manager-v0.9.1	v0.9.1     	cert-manager
+NAME        	NAMESPACE   	REVISION	UPDATED                                	STATUS  	CHART               	APP VERSION
+cert-manager	cert-manager	1       	2020-06-09 17:09:57.787974319 +0000 UTC	deployed	cert-manager-v0.15.1	v0.15.1
 ```
 
 ## 5 : Installation de rancher
@@ -111,8 +99,8 @@ helm repo update
 Et enfin on installe Rancher (**NB :** Pensez à remplacer **userX**) :
 
 ```bash
-helm install rancher-stable/rancher \
-  --name rancher \
+kubectl create ns cattle-system
+helm install rancher rancher-stable/rancher \
   --namespace cattle-system \
   --set ingress.tls.source=letsEncrypt \
   --set letsEncrypt.email=dday@ibd.sh \
